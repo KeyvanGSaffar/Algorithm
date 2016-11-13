@@ -1,0 +1,117 @@
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+
+public class RandomizedQueue<Item> implements Iterable<Item> {
+  // private int H;
+  private int T;
+  private Item[] itemArray;
+
+  public RandomizedQueue() { // construct an empty randomized queue
+    T = 0;
+    // H = -1;
+    itemArray = (Item[]) new Object[1];
+  }
+
+  public boolean isEmpty() { // is the queue empty?
+    return T == 0;
+  }
+
+  public int size() { // return the number of items on the queue
+    return T;
+  }
+
+  private void validItem(Item item) {
+    if (item == null) {
+      throw new NullPointerException();
+    }
+  }
+
+  public void enqueue(Item item) { // add the item
+    validItem(item);
+    if (T == itemArray.length)
+      resizeLast(T);
+
+    itemArray[T++] = item;
+  }
+
+  public Item dequeue() { // remove and return a random item
+    if (this.isEmpty()) {
+      throw new NoSuchElementException();
+    }
+
+    int rem = StdRandom.uniform(0, T);
+
+    Item item = itemArray[rem];
+    itemArray[rem] = null;
+
+    for (int i = rem + 1; i < T; i++)
+      itemArray[i - 1] = itemArray[i];
+    itemArray[T - 1] = null;
+    T--;
+
+    if (T > 0 && T <= (itemArray.length) / 4)
+      resizeLast(-(itemArray.length) / 2);
+    return item;
+
+  }
+
+  private void resizeLast(int change) {
+    // TODO Auto-generated method stub
+    Item[] copy = (Item[]) new Object[change + itemArray.length];
+    for (int i = 0; i < Math.min(copy.length, itemArray.length); i++) {
+
+      copy[i] = itemArray[i];
+    }
+    itemArray = copy;
+  }
+
+  public Item sample() { // return (but do not remove) a random item
+    if (this.isEmpty()) {
+      throw new NoSuchElementException();
+    }
+    int rem = StdRandom.uniform(0, T);
+
+    return itemArray[rem];
+  }
+
+  public Iterator<Item> iterator() { // return an independent iterator over
+                                     // items in random order
+    return new RandomizedQueueIterator();
+  }
+
+  private class RandomizedQueueIterator implements Iterator<Item> {
+    private int itr = 0;
+
+    @Override
+    public boolean hasNext() {
+      // TODO Auto-generated method stub
+      return itr < T;
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+
+    public Item next() {
+
+      if (T == itr) {
+        throw new NoSuchElementException();
+      }
+
+      return itemArray[itr++];
+    }
+
+  }
+
+  // public void arrayPrint() {
+  // for (int i = 0; i < (Integer) this.itemArray.length; i++)
+  // StdOut.print((Integer) this.itemArray[i] + " ");
+  // }
+
+  public static void main(String[] args) { // unit testing
+
+  }
+}
