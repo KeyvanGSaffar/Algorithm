@@ -5,22 +5,20 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
-  // private int H;
-  private int T;
+  private int tail;
   private Item[] itemArray;
 
   public RandomizedQueue() { // construct an empty randomized queue
-    T = 0;
-    // H = -1;
+    tail = 0;
     itemArray = (Item[]) new Object[1];
   }
 
   public boolean isEmpty() { // is the queue empty?
-    return T == 0;
+    return tail == 0;
   }
 
   public int size() { // return the number of items on the queue
-    return T;
+    return tail;
   }
 
   private void validItem(Item item) {
@@ -31,10 +29,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
   public void enqueue(Item item) { // add the item
     validItem(item);
-    if (T == itemArray.length)
-      resizeLast(T);
+    if (tail == itemArray.length)
+      resizeLast(tail);
 
-    itemArray[T++] = item;
+    itemArray[tail++] = item;
   }
 
   public Item dequeue() { // remove and return a random item
@@ -42,17 +40,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
       throw new NoSuchElementException();
     }
 
-    int rem = StdRandom.uniform(0, T);
+    int rem = StdRandom.uniform(0, tail);
 
     Item item = itemArray[rem];
     itemArray[rem] = null;
 
-    for (int i = rem + 1; i < T; i++)
+    for (int i = rem + 1; i < tail; i++)
       itemArray[i - 1] = itemArray[i];
-    itemArray[T - 1] = null;
-    T--;
+    itemArray[tail - 1] = null;
+    tail--;
 
-    if (T > 0 && T <= (itemArray.length) / 4)
+    if (tail > 0 && tail <= (itemArray.length) / 4)
       resizeLast(-(itemArray.length) / 2);
     return item;
 
@@ -72,7 +70,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     if (this.isEmpty()) {
       throw new NoSuchElementException();
     }
-    int rem = StdRandom.uniform(0, T);
+    int rem = StdRandom.uniform(0, tail);
 
     return itemArray[rem];
   }
@@ -88,7 +86,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     @Override
     public boolean hasNext() {
       // TODO Auto-generated method stub
-      return itr < T;
+      return itr < tail;
     }
 
     public void remove() {
@@ -97,7 +95,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     public Item next() {
 
-      if (T == itr) {
+      if (tail == itr) {
         throw new NoSuchElementException();
       }
 
