@@ -1,8 +1,6 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import edu.princeton.cs.algs4.StdOut;
-
 public class Deque<Item> implements Iterable<Item> {
 
   private int first; // index referring to the first item of queue
@@ -22,7 +20,7 @@ public class Deque<Item> implements Iterable<Item> {
 
   public int size() {
 
-    StdOut.println(last - first - 1);
+    // StdOut.println(last - first - 1);
     return (last - first - 1);
   } // return the number of items on the deque
 
@@ -123,7 +121,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     public Item next() {
 
-      if (last - itr == 1) {
+      if (last - itr == 0) {
         throw new NoSuchElementException();
       }
 
