@@ -109,9 +109,9 @@ public class Point implements Comparable<Point> {
     @Override
     public int compare(Point o1, Point o2) {
       // TODO Auto-generated method stub
-      if (slopeTo(o1) == slopeTo(o2))
+      if (Point.this.slopeTo(o1) == Point.this.slopeTo(o2))
         return 0;
-      else if (slopeTo(o1) > slopeTo(o2))
+      else if (Point.this.slopeTo(o1) > Point.this.slopeTo(o2))
         return 1;
       else
         return -1;
@@ -136,14 +136,16 @@ public class Point implements Comparable<Point> {
    */
   public static void main(String[] args) {
     /* YOUR CODE HERE */
-    
-    double[] test = new double[4];
-    test[0] = 1;
-    test[1] =  Double.POSITIVE_INFINITY;
-    test[2] = -1;
-    test[3] =  Double.NEGATIVE_INFINITY;
-    Arrays.sort(test);
-    for (int i = 0; i< test.length; i++)
-      StdOut.println(test[i]);
+
+//    double[] test = new double[4];
+//    test[0] = 1;
+//    test[1] = Double.POSITIVE_INFINITY;
+//    test[2] = -1;
+//    test[3] = Double.NEGATIVE_INFINITY;
+//    Arrays.sort(test);
+//    for (int i = 0; i < test.length; i++)
+      Point p1 = new Point(1,4);
+      Point p2 = new Point(1,4);
+      StdOut.println(p1.slopeTo(p2));
   }
 }

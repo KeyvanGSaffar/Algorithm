@@ -1,4 +1,3 @@
-import edu.princeton.cs.algs4.StdOut;
 
 /*************************************************************************
  * Compilation: javac LineSegment.java Execution: none Dependencies: Point.java
@@ -62,14 +61,14 @@ public class LineSegment {
   public int hashCode() {
     throw new UnsupportedOperationException();
   }
-  
+
   public static void main(String[] args) {
-    Point s = new Point(1,2);
-    Point e = new Point(6,5);
-    LineSegment t1 = new LineSegment(s, e);
-    LineSegment t3 = new LineSegment(s, e);
-    LineSegment t2 = new LineSegment(e, s);
-    StdOut.println(t1.equals(t1));
+    // Point s = new Point(1, 2);
+    // Point e = new Point(6, 5);
+    // LineSegment t1 = new LineSegment(s, e);
+    // LineSegment t3 = new LineSegment(s, e);
+    // LineSegment t2 = new LineSegment(e, s);
+    // StdOut.println(t1.equals(t1));
   }
 
 }
