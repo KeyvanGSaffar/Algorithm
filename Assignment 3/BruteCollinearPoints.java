@@ -20,66 +20,69 @@ public class BruteCollinearPoints {
 
     for (int i = 0; i < points.length; i++) {
       for (int j = i + 1; j < points.length; j++) {
-        if (points[i] == points[j]) {
+        if (points[i].compareTo(points[j]) == 0) {
           throw new IllegalArgumentException();
         }
       }
     }
 
-    
     n = points.length;
     arrayLineSegment = new LineSegment[n];
     double[] slopeArray = new double[n];
     int[] tempArray = new int[4];
     int[][] firstLast = new int[n][2];
+    // for (int t = 0; t < n; t++) {
+    // StdOut.println(firstLast[t][0]);
+    // StdOut.println(firstLast[t][1]);
+    // }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
         slopeArray[j] = points[j].slopeTo(points[i]);
+        if (slopeArray[j] == Double.NEGATIVE_INFINITY)
+          tempArray[0] = j;
       }
+
       for (int k = 0; k < n; k++) {
         if (slopeArray[k] == Double.NEGATIVE_INFINITY)
           continue;
 
-        int count = 0;
+        int count = 1;
         tempArray[count++] = k;
-        for (int l = k + 1; l < n; l++) {
-          if (slopeArray[k] == slopeArray[l]) {
+        // StdOut.println(count);
+        for (int l = 0; l < n; l++) {
+          if (k != l && slopeArray[k] == slopeArray[l]) {
             tempArray[count++] = l;
+            // StdOut.println(count);
           }
         }
+        // StdOut.println(tempArray[0]+" "+tempArray[1]+" "+tempArray[2]+"
+        // "+tempArray[3]);
         if (count == 4) {
-          int sLine = -1; // start point of line segment
-          int eLine = -1; // end point of line segment
+          // StdOut.println("Entered");
+          int sLine = tempArray[0]; // start point of line segment
+          int eLine = tempArray[0]; // end point of line segment
 
-          int comp01 = points[tempArray[0]].compareTo(points[tempArray[1]]);
-          int comp12 = points[tempArray[1]].compareTo(points[tempArray[2]]);
-          int comp23 = points[tempArray[2]].compareTo(points[tempArray[3]]);
-          int comp02 = points[tempArray[0]].compareTo(points[tempArray[2]]);
-          int comp03 = points[tempArray[0]].compareTo(points[tempArray[3]]);
-          int comp13 = points[tempArray[1]].compareTo(points[tempArray[3]]);
-          if (comp01 + comp02 + comp03 == 3)
-            eLine = tempArray[0];
-          if (comp01 + comp02 + comp03 == -3)
-            sLine = tempArray[0];
-          if (-comp01 + comp12 + comp13 == 3)
-            eLine = tempArray[1];
-          if (-comp01 + comp12 + comp13 == -3)
-            sLine = tempArray[1];
-          if (-comp02 - comp12 + comp23 == 3)
-            eLine = tempArray[2];
-          if (-comp02 - comp12 + comp23 == -3)
-            sLine = tempArray[2];
-          if (-comp03 - comp13 - comp23 == 3)
-            eLine = tempArray[3];
-          if (-comp03 - comp13 - comp23 == -3)
-            sLine = tempArray[3];
+          for (int t = 1; t < 4; t++) {
+            if (points[tempArray[t]].compareTo(points[eLine]) > 0)
+              eLine = tempArray[t];
+            if (points[tempArray[t]].compareTo(points[sLine]) < 0)
+              sLine = tempArray[t];
+
+          }
+
+          // StdOut.println("sLine" + sLine);
+          // StdOut.println("eLine" + eLine);
 
           int chk = 0;
           int m;
-          for (m = 0; firstLast[m][1] != firstLast[m][2]; m++) {
-            if (firstLast[m][1] == sLine && firstLast[m][2] == eLine) {
+          for (m = 0; firstLast[m][0] != firstLast[m][1]; m++) {
+            // for (m = 0; (firstLast[m][0] != 0) && (firstLast[m][1] !=0); m++)
+            // {
+
+            // StdOut.println(m);
+            if (firstLast[m][0] == sLine && firstLast[m][1] == eLine) {
               chk = 1;
               break;
             }
@@ -87,14 +90,19 @@ public class BruteCollinearPoints {
 
           if (chk == 0) {
             arrayLineSegment[m] = new LineSegment(points[sLine], points[eLine]);
-            firstLast[m][1] = sLine;
-            firstLast[m][2] = eLine;
-            size = m;
+            firstLast[m][0] = sLine;
+            firstLast[m][1] = eLine;
+            size = m + 1;
           }
 
         }
       }
     }
+    // for (int t = 0; t < size; t++) {
+    // StdOut.println("sLine" + firstLast[t][0]);
+    // StdOut.println("eLine" + firstLast[t][1]);
+    // }
+
   }
 
   public int numberOfSegments() { // the number of line segments
@@ -110,7 +118,7 @@ public class BruteCollinearPoints {
     }
     return arrayToReturn;
   }
-  
+
   public static void main(String[] args) {
 
     // read the n points from a file
@@ -118,9 +126,9 @@ public class BruteCollinearPoints {
     int n = in.readInt();
     Point[] points = new Point[n];
     for (int i = 0; i < n; i++) {
-        int x = in.readInt();
-        int y = in.readInt();
-        points[i] = new Point(x, y);
+      int x = in.readInt();
+      int y = in.readInt();
+      points[i] = new Point(x, y);
     }
 
     // draw the points
@@ -128,7 +136,7 @@ public class BruteCollinearPoints {
     StdDraw.setXscale(0, 32768);
     StdDraw.setYscale(0, 32768);
     for (Point p : points) {
-        p.draw();
+      p.draw();
     }
     StdDraw.show();
 
@@ -136,8 +144,8 @@ public class BruteCollinearPoints {
     BruteCollinearPoints collinear = new BruteCollinearPoints(points);
     for (LineSegment segment : collinear.segments()) {
       StdOut.println(segment);
-        segment.draw();
+      segment.draw();
     }
     StdDraw.show();
-}
+  }
 }

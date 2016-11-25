@@ -22,7 +22,7 @@ public class FastCollinearPoints {
 
     for (int i = 0; i < points.length; i++) {
       for (int j = i + 1; j < points.length; j++) {
-        if (points[i] == points[j]) {
+        if (points[i].compareTo(points[j]) == 0) {
           throw new IllegalArgumentException();
         }
       }
@@ -32,50 +32,64 @@ public class FastCollinearPoints {
     arrayLineSegment = new LineSegment[n];
     double[] slopeArray = new double[n];
     int[][] firstLast = new int[n][2];
+    Point[] pointsC = new Point[n];
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    for (Point p : points)
+      StdOut.println(p);
+    for (int t = 0; t < n; t++) {
+      pointsC[t] = points[t];
+    }
     for (int i = 0; i < n; i++) {
-      Arrays.sort(points, points[i].slopeOrder());
+      Arrays.sort(points, pointsC[i].slopeOrder());
+      
+      StdOut.println();
+      for (Point p : points)
+        StdOut.println(p);
+      
       for (int j = 0; j < n; j++) {
-        slopeArray[j] = points[j].slopeTo(points[i]);
+        slopeArray[j] = points[j].slopeTo(pointsC[i]);
         // slopeArrayCopy[j] = slopeArray[j];
+        StdOut.println(slopeArray[j]);
       }
       // Arrays.sort(slopeArray);
       int cnt = 1;
       double temp = slopeArray[1];
-      int sLine = 0; // start point of line segment
-      int eLine = 0; // end point of line segment
+      int sLine = points[0].getIndex(); // start point of line segment
+      int eLine = points[0].getIndex(); // end point of line segment
 
       for (int k = 2; k < n; k++) {
-        if (slopeArray[k] == Double.NEGATIVE_INFINITY)
-          continue;
+//        if (slopeArray[k] == Double.NEGATIVE_INFINITY)
+//          continue;
+
+        
         if (slopeArray[k] == temp) {
           cnt++;
         } else {
-          if (cnt >= 4) {
+          if (cnt >= 3) {
             for (int l = k - cnt; l < k; l++) {
-              if (points[l].compareTo(points[eLine]) == +1)
-                eLine = l;
-              if (points[l].compareTo(points[sLine]) == -1)
-                sLine = l;
+              if (points[l].compareTo(pointsC[eLine]) > 0)
+                eLine = points[l].getIndex();
+              if (points[l].compareTo(pointsC[sLine]) < 0)
+                sLine = points[l].getIndex();
             }
 
           }
 
           int chk = 0;
           int m;
-          for (m = 0; firstLast[m][1] != firstLast[m][2]; m++) {
-            if (firstLast[m][1] == sLine && firstLast[m][2] == eLine) {
+          for (m = 0; firstLast[m][0] != firstLast[m][1]; m++) {
+            if (firstLast[m][0] == sLine && firstLast[m][1] == eLine) {
               chk = 1;
               break;
             }
           }
 
           if (chk == 0) {
-            arrayLineSegment[m] = new LineSegment(points[sLine], points[eLine]);
-            firstLast[m][1] = sLine;
-            firstLast[m][2] = eLine;
-            size = m;
+            arrayLineSegment[m] = new LineSegment(pointsC[sLine], pointsC[eLine]);
+            firstLast[m][0] = sLine;
+            firstLast[m][1] = eLine;
+            size = m + 1;
           }
 
           //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +100,11 @@ public class FastCollinearPoints {
         }
       }
     }
-
+//    for (int s=0; s<size: s++){
+//      StdOut.println(firstLast[s,0] + ",");
+//    }
+//  for (Point p : points)
+//    StdOut.println(p);
   }
 
   public int numberOfSegments() { // the number of line segments
@@ -124,7 +142,7 @@ public class FastCollinearPoints {
     StdDraw.show();
 
     // print and draw the line segments
-    BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+    FastCollinearPoints collinear = new FastCollinearPoints(points);
     for (LineSegment segment : collinear.segments()) {
       StdOut.println(segment);
       segment.draw();

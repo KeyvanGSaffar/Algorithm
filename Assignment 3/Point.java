@@ -9,16 +9,15 @@
  *
  ******************************************************************************/
 
-import java.util.Arrays;
 import java.util.Comparator;
 import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.StdOut;
 
 public class Point implements Comparable<Point> {
 
   private final int x; // x-coordinate of this point
   private final int y; // y-coordinate of this point
-
+  private final int index;
+  private static int lastIndex=0;
   /**
    * Initializes a new point.
    *
@@ -31,6 +30,7 @@ public class Point implements Comparable<Point> {
     /* DO NOT MODIFY */
     this.x = x;
     this.y = y;
+    this.index = lastIndex++;
   }
 
   /**
@@ -67,7 +67,17 @@ public class Point implements Comparable<Point> {
    */
   public double slopeTo(Point that) {
     /* YOUR CODE HERE */
-    double slope = (that.y - this.y) / (that.x - this.x);
+    double slope;
+    if ((this.y == that.y) && (this.x == that.x))
+      slope = Double.NEGATIVE_INFINITY;
+    else if ((this.x == that.x) && (this.y != that.y))
+      slope = Double.POSITIVE_INFINITY;
+    else if ((this.y == that.y) && (this.x != that.x))
+      slope = +0.0;
+    else
+      slope = (double) (that.y - this.y) / (double) (that.x - this.x);
+    // slope = 1.23456;
+
     return slope;
   }
 
@@ -101,10 +111,10 @@ public class Point implements Comparable<Point> {
    */
   public Comparator<Point> slopeOrder() {
     /* YOUR CODE HERE */
-    return new slopeComaparator();
+    return new SlopeComaparator();
   }
 
-  private class slopeComaparator implements Comparator<Point> {
+  private class SlopeComaparator implements Comparator<Point> {
 
     @Override
     public int compare(Point o1, Point o2) {
@@ -112,7 +122,7 @@ public class Point implements Comparable<Point> {
       if (Point.this.slopeTo(o1) == Point.this.slopeTo(o2))
         return 0;
       else if (Point.this.slopeTo(o1) > Point.this.slopeTo(o2))
-        return 1;
+        return +1;
       else
         return -1;
     }
@@ -131,21 +141,11 @@ public class Point implements Comparable<Point> {
     return "(" + x + ", " + y + ")";
   }
 
+  public int getIndex() {
+    return index;
+  }
+
   /**
    * Unit tests the Point data type.
    */
-  public static void main(String[] args) {
-    /* YOUR CODE HERE */
-
-//    double[] test = new double[4];
-//    test[0] = 1;
-//    test[1] = Double.POSITIVE_INFINITY;
-//    test[2] = -1;
-//    test[3] = Double.NEGATIVE_INFINITY;
-//    Arrays.sort(test);
-//    for (int i = 0; i < test.length; i++)
-      Point p1 = new Point(1,4);
-      Point p2 = new Point(1,4);
-      StdOut.println(p1.slopeTo(p2));
-  }
 }
