@@ -16,8 +16,7 @@ public class Point implements Comparable<Point> {
 
   private final int x; // x-coordinate of this point
   private final int y; // y-coordinate of this point
-  private final int index;
-  private static int lastIndex=0;
+
   /**
    * Initializes a new point.
    *
@@ -30,7 +29,7 @@ public class Point implements Comparable<Point> {
     /* DO NOT MODIFY */
     this.x = x;
     this.y = y;
-    this.index = lastIndex++;
+
   }
 
   /**
@@ -139,10 +138,6 @@ public class Point implements Comparable<Point> {
   public String toString() {
     /* DO NOT MODIFY */
     return "(" + x + ", " + y + ")";
-  }
-
-  public int getIndex() {
-    return index;
   }
 
   /**
