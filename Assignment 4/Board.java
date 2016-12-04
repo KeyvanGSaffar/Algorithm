@@ -59,18 +59,32 @@ public final class Board {
                         // blocks
     int r1 = StdRandom.uniform(n);
     int c1 = StdRandom.uniform(n);
+    int r2;
+    int c2;
     while(true){
-      int r2 = StdRandom.uniform(n);
-      int c2 = StdRandom.uniform(n);
+      r2 = StdRandom.uniform(n);
+      c2 = StdRandom.uniform(n);
       if (r2 != r1 || c2 != c1)
         break;
     }
     int[][] twin = new int[n][n];
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+        twin[i][j] = in_blocks[i][j];
+    
+   twin[r1][c1] =  in_blocks[r2][c2];
+   twin[r2][c2] =  in_blocks[r1][c1];
+   return new Board(twin);
     
   }
 
   public boolean equals(Object y) { // does this board equal y?
-
+    Board y_chk = (Board) y;
+    for (int i = 0; i < n; i++) 
+      for (int j = 0; j < n; j++)
+        if (this.in_blocks[i][j]!= y_chk.in_blocks[i][j])
+          return false;
+    return true;
   }
 
   public Iterable<Board> neighbors() { // all neighboring boards
