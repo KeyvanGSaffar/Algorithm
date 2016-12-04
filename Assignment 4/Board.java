@@ -125,10 +125,8 @@ public final class Board {
     public class neighborIterator implements Iterator<Board> {
       int[] urdl = { 0, 0, 0, 0 };
       boolean start = true;
-
-      @Override
-      public boolean hasNext() {
-        // TODO Auto-generated method stub
+      
+      private void initUrdl() {
         if (start == true) {
           if (r0 == 0)
             urdl[0] = 1;
@@ -140,6 +138,12 @@ public final class Board {
             urdl[1] = 1;
           start = false;
         }
+      }
+
+      @Override
+      public boolean hasNext() {
+        // TODO Auto-generated method stub
+        this.initUrdl();
 
         for (int i = 0; i < 4; i++)
           if (urdl[i] == 0)
