@@ -8,7 +8,8 @@ public final class Board {
   public final int[][] inBlocks;
   private final int n;
   private int r0, c0;
-
+  private Board[] neighborsList;
+  private int neighborsCount = 4;
   public Board(int[][] blocks) { // construct a board from an n-by-n array of
                                  // blocks
                                  // (where blocks[i][j] = block in row i, column
@@ -23,6 +24,56 @@ public final class Board {
         c0 = j;
       }
     }
+    neighborArray();
+  }
+  
+  private void neighborArray() {
+    
+    if (r0 == 0 || r0 == n - 1)
+      neighborsCount--;
+    if (c0 == 0 || c0 == n - 1)
+      neighborsCount--;
+
+    neighborsList = new Board[neighborsCount];
+    int cnt = 0;
+    
+    if (r0 > 0) {
+      int[][] neighborBlocks = new int[n][n];
+      for (int k = 0; k < n; k++) 
+        for (int j = 0; j < n; j++) 
+          neighborBlocks[k][j] = inBlocks[k][j];
+      neighborBlocks[r0][c0] = neighborBlocks[r0 - 1][c0];
+      neighborBlocks[r0 - 1][c0] = 0;
+      neighborsList[cnt++] = new Board(neighborBlocks);
+    }
+    if (r0 < n-1) {
+      int[][] neighborBlocks = new int[n][n];
+      for (int k = 0; k < n; k++) 
+        for (int j = 0; j < n; j++) 
+          neighborBlocks[k][j] = inBlocks[k][j];
+      neighborBlocks[r0][c0] = neighborBlocks[r0 + 1][c0];
+      neighborBlocks[r0 + 1][c0] = 0;
+      neighborsList[cnt++] = new Board(neighborBlocks);
+    }
+    if (c0 > 0) {
+      int[][] neighborBlocks = new int[n][n];
+      for (int k = 0; k < n; k++) 
+        for (int j = 0; j < n; j++) 
+          neighborBlocks[k][j] = inBlocks[k][j];
+      neighborBlocks[r0][c0] = neighborBlocks[r0][c0-1];
+      neighborBlocks[r0][c0-1] = 0;
+      neighborsList[cnt++] = new Board(neighborBlocks);
+    }
+    if (c0 < n-1) {
+      int[][] neighborBlocks = new int[n][n];
+      for (int k = 0; k < n; k++) 
+        for (int j = 0; j < n; j++) 
+          neighborBlocks[k][j] = inBlocks[k][j];
+      neighborBlocks[r0][c0] = neighborBlocks[r0][c0+1];
+      neighborBlocks[r0][c0+1] = 0;
+      neighborsList[cnt++] = new Board(neighborBlocks);
+    }
+    
   }
 
   public int dimension() { // board dimension n
@@ -111,82 +162,36 @@ public final class Board {
   }
 
   public Iterable<Board> neighbors() { // all neighboring boards
-    return new neighborsIterable();
+    
+    return new BoardList();
   }
 
-  public class neighborsIterable implements Iterable<Board> {
+  public class BoardList implements Iterable<Board> {
 
     @Override
     public Iterator<Board> iterator() {
       // TODO Auto-generated method stub
-      return new neighborIterator();
+      return new BoardListIterator();
     }
 
-    public class neighborIterator implements Iterator<Board> {
-      int[] urdl = { 0, 0, 0, 0 };
-      boolean start = true;
-      
-      private void initUrdl() {
-        if (start == true) {
-          if (r0 == 0)
-            urdl[0] = 1;
-          if (r0 == n - 1)
-            urdl[2] = 1;
-          if (c0 == 0)
-            urdl[3] = 1;
-          if (c0 == n - 1)
-            urdl[1] = 1;
-          start = false;
-        }
-      }
-
+    public class BoardListIterator implements Iterator<Board> {
+      int itrCount = 0;
+//      Board[] nextBoard = neighborsList;
       @Override
       public boolean hasNext() {
         // TODO Auto-generated method stub
-        this.initUrdl();
-
-        for (int i = 0; i < 4; i++)
-          if (urdl[i] == 0)
-            return true;
-        return false;
+        return itrCount < neighborsCount;
       }
 
       @Override
       public Board next() {
         // TODO Auto-generated method stub
-        int[][] nextBlocks;
-        int i;
-        for (i = 0; i < 4; i++)
-          if (urdl[i] == 0)
-            break;
-        if (i == 4)
+        if (neighborsCount - itrCount == 1) {
           throw new NoSuchElementException();
-        else {
-          nextBlocks = new int[n][n];
-          for (int k = 0; k < n; k++) {
-            for (int j = 0; j < n; j++) {
-              nextBlocks[k][j] = inBlocks[k][j];
-            }
-          }
         }
 
-        if (i == 0) {
-          nextBlocks[r0][c0] = nextBlocks[r0 - 1][c0];
-          nextBlocks[r0 - 1][c0] = 0;
-          return new Board(nextBlocks);
-        } else if (i == 1) {
-          nextBlocks[r0][c0] = nextBlocks[r0][c0 + 1];
-          nextBlocks[r0][c0 + 1] = 0;
-          return new Board(nextBlocks);
-        } else if (i == 2) {
-          nextBlocks[r0][c0] = nextBlocks[r0 + 1][c0];
-          nextBlocks[r0 + 1][c0] = 0;
-          return new Board(nextBlocks);
-        } else {
-          nextBlocks[r0][c0] = nextBlocks[r0][c0 - 1];
-          nextBlocks[r0][c0 - 1] = 0;
-          return new Board(nextBlocks);
-        }
+        return neighborsList[itrCount++];
+
       }
 
       @Override

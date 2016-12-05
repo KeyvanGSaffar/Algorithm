@@ -8,28 +8,37 @@ import edu.princeton.cs.algs4.StdOut;
 public class Solver {
 
   private MinPQ<SearchNode> snPQ;
+  private MinPQ<SearchNode> snPQPrim;
   private SearchNode initSN;
+  private SearchNode initSNPrim;
 
   private SearchNode solutSN = null; 
 
   public Solver(Board initial) { // find a solution to the initial board (using
                                  // the A* algorithm)
     initSN = new SearchNode(initial, 0, null);
+    initSNPrim = new SearchNode(initial.twin(), 0, null);
     snPQ = new MinPQ<SearchNode>(SearchNode.HamPriority);
+    snPQPrim = new MinPQ<SearchNode>(SearchNode.HamPriority);
     snPQ.insert(initSN);
-    while (!snPQ.min().board.isGoal()) {
+    snPQPrim.insert(initSNPrim);
+    while (!snPQ.min().board.isGoal() && !snPQPrim.min().board.isGoal()) {
       SearchNode minSN = snPQ.delMin();
+      SearchNode minSNPrim = snPQPrim.delMin();
       for (Board nb : minSN.board.neighbors()) {
         snPQ.insert(new SearchNode(nb, minSN.moves + 1, minSN));
       }
+      for (Board nb : minSNPrim.board.neighbors()) {
+        snPQPrim.insert(new SearchNode(nb, minSNPrim.moves + 1, minSNPrim));
+      }
     }
-    solutSN = snPQ.delMin();
+    if (snPQ.min().board.isGoal())
+      solutSN = snPQ.delMin();
     
   }
 
   public boolean isSolvable() { // is the initial board solvable?
-    Solver chkSolvable =  new Solver(this.initSN.board.twin());
-    if(chkSolvable.solutSN != null)
+    if(solutSN != null)
       return true;
     else
       return false;
