@@ -12,7 +12,7 @@ public class SearchNode {
     searchN = sN;
   }
   
-  public static class ByHam implements Comparator<SearchNode> {
+  private static class ByHam implements Comparator<SearchNode> {
 
     @Override
     public int compare(SearchNode o1, SearchNode o2) {
@@ -24,7 +24,7 @@ public class SearchNode {
     
   }
   
-  public static class ByManh implements Comparator<SearchNode> {
+  private static class ByManh implements Comparator<SearchNode> {
 
     @Override
     public int compare(SearchNode o1, SearchNode o2) {
