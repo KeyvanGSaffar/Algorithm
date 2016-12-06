@@ -1,90 +1,42 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
-public final class Board {
-  public final int[][] inBlocks;
-  private final int n;
+public class Board {
+  private final int[][] inBlocks;
   private int r0, c0;
   private Board[] neighborsList;
-  private int neighborsCount = 4;
+  // private int neighborsCount = 4;
+
   public Board(int[][] blocks) { // construct a board from an n-by-n array of
                                  // blocks
                                  // (where blocks[i][j] = block in row i, column
                                  // j)
-    n = blocks.length;
-    inBlocks = new int[n][n];
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
+    inBlocks = new int[blocks.length][blocks.length];
+
+    for (int i = 0; i < inBlocks.length; i++) {
+      for (int j = 0; j < inBlocks.length; j++) {
         inBlocks[i][j] = blocks[i][j];
-        if (blocks[i][j] == 0)
+        if (blocks[i][j] == 0) {
           r0 = i;
-        c0 = j;
+          c0 = j;
+        }
       }
     }
-    neighborArray();
-  }
-  
-  private void neighborArray() {
-    
-    if (r0 == 0 || r0 == n - 1)
-      neighborsCount--;
-    if (c0 == 0 || c0 == n - 1)
-      neighborsCount--;
 
-    neighborsList = new Board[neighborsCount];
-    int cnt = 0;
-    
-    if (r0 > 0) {
-      int[][] neighborBlocks = new int[n][n];
-      for (int k = 0; k < n; k++) 
-        for (int j = 0; j < n; j++) 
-          neighborBlocks[k][j] = inBlocks[k][j];
-      neighborBlocks[r0][c0] = neighborBlocks[r0 - 1][c0];
-      neighborBlocks[r0 - 1][c0] = 0;
-      neighborsList[cnt++] = new Board(neighborBlocks);
-    }
-    if (r0 < n-1) {
-      int[][] neighborBlocks = new int[n][n];
-      for (int k = 0; k < n; k++) 
-        for (int j = 0; j < n; j++) 
-          neighborBlocks[k][j] = inBlocks[k][j];
-      neighborBlocks[r0][c0] = neighborBlocks[r0 + 1][c0];
-      neighborBlocks[r0 + 1][c0] = 0;
-      neighborsList[cnt++] = new Board(neighborBlocks);
-    }
-    if (c0 > 0) {
-      int[][] neighborBlocks = new int[n][n];
-      for (int k = 0; k < n; k++) 
-        for (int j = 0; j < n; j++) 
-          neighborBlocks[k][j] = inBlocks[k][j];
-      neighborBlocks[r0][c0] = neighborBlocks[r0][c0-1];
-      neighborBlocks[r0][c0-1] = 0;
-      neighborsList[cnt++] = new Board(neighborBlocks);
-    }
-    if (c0 < n-1) {
-      int[][] neighborBlocks = new int[n][n];
-      for (int k = 0; k < n; k++) 
-        for (int j = 0; j < n; j++) 
-          neighborBlocks[k][j] = inBlocks[k][j];
-      neighborBlocks[r0][c0] = neighborBlocks[r0][c0+1];
-      neighborBlocks[r0][c0+1] = 0;
-      neighborsList[cnt++] = new Board(neighborBlocks);
-    }
-    
   }
 
   public int dimension() { // board dimension n
-    return n;
+    return inBlocks.length;
   }
 
   public int hamming() { // number of blocks out of place
     int ham = 0;
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
-        if ((i * n + j != 8) && (inBlocks[i][j] != i * n + (j + 1)))
+    for (int i = 0; i < inBlocks.length; i++) {
+      for (int j = 0; j < inBlocks.length; j++) {
+        if ((i * inBlocks.length + j != inBlocks.length * inBlocks.length - 1)
+            && (inBlocks[i][j] != i * inBlocks.length + (j + 1)))
           ham++;
       }
     }
@@ -93,11 +45,17 @@ public final class Board {
 
   public int manhattan() { // sum of Manhattan distances between blocks and goal
     int manh = 0;
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
-        if ((i * n + j != 8) && (inBlocks[i][j] != i * n + (j + 1))) {
-          int rGoal = (inBlocks[i][j] - 1) / n;
-          int cGoal = (inBlocks[i][j] - 1) % n;
+    for (int i = 0; i < inBlocks.length; i++) {
+      for (int j = 0; j < inBlocks.length; j++) {
+        if ((inBlocks[i][j] != 0) && (inBlocks[i][j] != i * inBlocks.length + (j + 1))) {
+          // StdOut.println("i: " + i);
+          // StdOut.println("i: " + j);
+          int rGoal = (inBlocks[i][j] - 1) / inBlocks.length;
+          int cGoal = (inBlocks[i][j] - 1) % inBlocks.length;
+
+          // StdOut.println("rGoal: " + rGoal);
+          // StdOut.println("cGoal: " + cGoal);
+
           manh += Math.abs(i - rGoal) + Math.abs(j - cGoal);
         }
       }
@@ -106,12 +64,15 @@ public final class Board {
   }
 
   public boolean isGoal() { // is this board the goal board?
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
-        if ((i * n + j != 8) && (inBlocks[i][j] != i * n + (j + 1)))
+    for (int i = 0; i < inBlocks.length; i++) {
+      for (int j = 0; j < inBlocks.length; j++) {
+        if ((i * inBlocks.length + j != inBlocks.length * inBlocks.length - 1)
+            && (inBlocks[i][j] != i * inBlocks.length + (j + 1)))
           return false;
       }
     }
+    if (inBlocks[inBlocks.length - 1][inBlocks.length - 1] != 0)
+      return false;
     return true;
   }
 
@@ -122,22 +83,22 @@ public final class Board {
     int r2;
     int c2;
     while (true) {
-      r1 = StdRandom.uniform(n);
-      c1 = StdRandom.uniform(n);
+      r1 = StdRandom.uniform(inBlocks.length);
+      c1 = StdRandom.uniform(inBlocks.length);
 
       if (inBlocks[r1][c1] != 0)
         break;
     }
     while (true) {
-      r2 = StdRandom.uniform(n);
-      c2 = StdRandom.uniform(n);
+      r2 = StdRandom.uniform(inBlocks.length);
+      c2 = StdRandom.uniform(inBlocks.length);
       if (inBlocks[r2][c2] != 0)
         if (r2 != r1 || c2 != c1)
           break;
     }
-    int[][] twin = new int[n][n];
-    for (int i = 0; i < n; i++)
-      for (int j = 0; j < n; j++)
+    int[][] twin = new int[inBlocks.length][inBlocks.length];
+    for (int i = 0; i < inBlocks.length; i++)
+      for (int j = 0; j < inBlocks.length; j++)
         twin[i][j] = inBlocks[i][j];
 
     twin[r1][c1] = inBlocks[r2][c2];
@@ -147,26 +108,83 @@ public final class Board {
   }
 
   public boolean equals(Object y) { // does this board equal y?
-    if (y.getClass() != Board.class)
+    if (y == null)
       return false;
     else {
-      Board y_chk = (Board) y;
-      if (this.dimension() != y_chk.dimension())
+      if (y.getClass() != this.getClass())
         return false;
-      for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-          if (this.inBlocks[i][j] != y_chk.inBlocks[i][j])
-            return false;
-      return true;
+      else {
+        // y = (Board) y;
+        if (this.dimension() != ((Board) y).dimension())
+          return false;
+        for (int i = 0; i < inBlocks.length; i++)
+          for (int j = 0; j < inBlocks.length; j++)
+            if (this.inBlocks[i][j] != ((Board) y).inBlocks[i][j])
+              return false;
+        return true;
+      }
+    }
+  }
+
+  private void neighborArray() {
+    int neighborsCount = 4;
+    // StdOut.println("r0 is: " + r0);
+    // StdOut.println("C0 is: " + c0);
+    if (r0 == 0 || r0 == inBlocks.length - 1)
+      neighborsCount--;
+    if (c0 == 0 || c0 == inBlocks.length - 1)
+      neighborsCount--;
+
+    // StdOut.println("neighborsCount: " + neighborsCount);
+
+    neighborsList = new Board[neighborsCount];
+    int cnt = 0;
+    int[][] neighborBlocks;
+
+    if (r0 > 0) {
+      neighborBlocks = new int[inBlocks.length][inBlocks.length];
+      for (int k = 0; k < inBlocks.length; k++)
+        for (int j = 0; j < inBlocks.length; j++)
+          neighborBlocks[k][j] = inBlocks[k][j];
+      neighborBlocks[r0][c0] = neighborBlocks[r0 - 1][c0];
+      neighborBlocks[r0 - 1][c0] = 0;
+      neighborsList[cnt++] = new Board(neighborBlocks);
+    }
+    if (r0 < inBlocks.length - 1) {
+      neighborBlocks = new int[inBlocks.length][inBlocks.length];
+      for (int k = 0; k < inBlocks.length; k++)
+        for (int j = 0; j < inBlocks.length; j++)
+          neighborBlocks[k][j] = inBlocks[k][j];
+      neighborBlocks[r0][c0] = neighborBlocks[r0 + 1][c0];
+      neighborBlocks[r0 + 1][c0] = 0;
+      neighborsList[cnt++] = new Board(neighborBlocks);
+    }
+    if (c0 > 0) {
+      neighborBlocks = new int[inBlocks.length][inBlocks.length];
+      for (int k = 0; k < inBlocks.length; k++)
+        for (int j = 0; j < inBlocks.length; j++)
+          neighborBlocks[k][j] = inBlocks[k][j];
+      neighborBlocks[r0][c0] = neighborBlocks[r0][c0 - 1];
+      neighborBlocks[r0][c0 - 1] = 0;
+      neighborsList[cnt++] = new Board(neighborBlocks);
+    }
+    if (c0 < inBlocks.length - 1) {
+      neighborBlocks = new int[inBlocks.length][inBlocks.length];
+      for (int k = 0; k < inBlocks.length; k++)
+        for (int j = 0; j < inBlocks.length; j++)
+          neighborBlocks[k][j] = inBlocks[k][j];
+      neighborBlocks[r0][c0] = neighborBlocks[r0][c0 + 1];
+      neighborBlocks[r0][c0 + 1] = 0;
+      neighborsList[cnt++] = new Board(neighborBlocks);
     }
   }
 
   public Iterable<Board> neighbors() { // all neighboring boards
-    
+    this.neighborArray();
     return new BoardList();
   }
 
-  public class BoardList implements Iterable<Board> {
+  private class BoardList implements Iterable<Board> {
 
     @Override
     public Iterator<Board> iterator() {
@@ -175,18 +193,19 @@ public final class Board {
     }
 
     public class BoardListIterator implements Iterator<Board> {
-      int itrCount = 0;
-//      Board[] nextBoard = neighborsList;
+      private int itrCount = 0;
+
+      // Board[] nextBoard = neighborsList;
       @Override
       public boolean hasNext() {
         // TODO Auto-generated method stub
-        return itrCount < neighborsCount;
+        return itrCount < neighborsList.length;
       }
 
       @Override
       public Board next() {
         // TODO Auto-generated method stub
-        if (neighborsCount - itrCount == 1) {
+        if (neighborsList.length - itrCount == 0) {
           throw new NoSuchElementException();
         }
 
@@ -206,23 +225,35 @@ public final class Board {
 
   public String toString() { // string representation of this board (in the
                              // output format specified below)
-    String output = "";
-    output += this.dimension() + "\n";
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
-        output += inBlocks[i][j] + " ";
+    StringBuilder output = new StringBuilder();
+    output.append(this.dimension());
+    output.append("\n");
+    for (int i = 0; i < inBlocks.length; i++) {
+      for (int j = 0; j < inBlocks.length; j++) {
+        output.append(inBlocks[i][j]);
+        output.append(" ");
       }
-      output += "\n";
+      output.append("\n");
     }
-    output += "\n";
-    return output;
+    output.append("\n");
+    return output.toString();
   }
 
   public static void main(String[] args) { // unit tests (not graded)
-    String test = "";
-    test += "g" + "\n";
-    test += "hello";
-    StdOut.print(test);
-
+    // int[][] blocks = { { 1, 4, 0 }, { 2, 3, 8 }, { 4, 6, 7 } };
+    // Board test = new Board(blocks);
+    // StdOut.print(test.toString());
+    // for (Board t : test.neighbors())
+    // StdOut.print(t.toString());
+    // StdOut.print(test.twin());
+    // In in = new In(args[0]);
+    // int n = in.readInt();
+    // int[][] blocks = new int[n][n];
+    // for (int i = 0; i < n; i++)
+    // for (int j = 0; j < n; j++)
+    // blocks[i][j] = in.readInt();
+    // Board initial = new Board(blocks);
+    // for (Board t : initial.neighbors())
+    // StdOut.print(t);
   }
 }
